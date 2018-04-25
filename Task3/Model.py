@@ -105,7 +105,7 @@ def Train(x,y):
                     
            ax1.clear()        
            ax1.plot(xs,ys)  
-           plt.Show()      
+           plt.show()      
            Confusion,Mean_square_error = Mse(x_test,y_test)
            print(Confusion)
            print("Accuracy : ", (Confusion[0][0]+Confusion[1][1]+Confusion[2][2])/60.0  )
@@ -126,7 +126,7 @@ def Mse(x,y):
           else:
              a = Hyper_bolic_Tangent(np.dot(a,Weights[l])+Bias[l])  
           if(l==Num_Hidden_Layer+1):
-              Y = y_train[i].reshape((1,3))
+              Y = y[i].reshape((1,3))
               output = a.reshape((1,3))
               idx = [ j for j in range(0,3) if y[i][j]==1]
               ind = np.argmax(a[0], axis=0)

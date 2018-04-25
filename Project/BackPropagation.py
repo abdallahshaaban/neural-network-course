@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-fig = plt.figure()
-ax1 = fig.add_subplot(1,1,1)
+import copy
 def sigmoid(x):
         return 1 / (1 + np.exp(-x))
     
@@ -33,7 +32,7 @@ def SigmaError( y , y_hat ):
 def Feedforward(x,y): 
     
     for i in range(0,len(x)):
-         a = x[i].reshape((1,25))
+         a = x[i].reshape((1,23))
          Activations[0] = a
        
          """forward"""
@@ -75,22 +74,33 @@ def Update_Weight():
 def Train(x,y):
            
            global  Activations,Sigmas,Weights,Bias,Num_Hidden_Layer,Num_epochs,eta,Num_of_Neurons,Activation,Mse_threshold,Use_Bias,x_train,y_train,x_test,y_test
-           
+           PrevACC = -1
+           PrevWeights = copy.deepcopy(Weights)
+           BestAcc = []
            ys = []
            xs = []
-           if(Mse_threshold ==0):
+           if(Mse_threshold == 0):
                for epoch in range(0,Num_epochs):
                   Feedforward(x,y)
                   confusion,cost= Mse(x_train,y_train )
                   ys.append(cost)
                   xs.append(epoch)
-                  if(epoch%100==0):
+                  if(epoch%10==0):
                     Confusion,Mean_square_error = Mse(x_train,y_train)
                     print(Confusion)
                     print("Mse : " , Mean_square_error)
-               Confusion,Mean_square_error = Mse(x_test,y_test)
-               print(Confusion)
-               print("Mse : " , Mean_square_error)
+                    TestConf,TestMSE = Mse(x_test,y_test)
+                    Acc = (TestConf[0][0]+TestConf[1][1]+TestConf[2][2] + TestConf[3][3] + TestConf[4][4])/26.0
+                    print(TestConf)
+                    print("\n",Acc,"\n---------------------------------------------------\n")
+                    BestAcc.append(Acc)
+                    '''
+                    if Acc < PrevACC:
+                        Weights = copy.deepcopy(PrevWeights)
+                        break;
+                    PrevACC = Acc
+                    PrevWeights = copy.deepcopy(Weights)
+                    '''
            else:
                j = 0
                Mean_square_error=1000
@@ -100,16 +110,33 @@ def Train(x,y):
                     ys.append(Mean_square_error)
                     xs.append(j)
                     j+=1
-                    #print(Confusion)
-                    #print("Mse : " , Mean_square_error)
-                    
+                    if(j%10==0):
+                        Confusion,Mean_square_error = Mse(x_train,y_train)
+                        print(Confusion)
+                        print("Mse : " , Mean_square_error)
+                        TestConf,TestMSE = Mse(x_test,y_test)
+                        Acc = (TestConf[0][0]+TestConf[1][1]+TestConf[2][2] + TestConf[3][3] + TestConf[4][4])/26.0
+                        print(TestConf)
+                        print("\n",Acc,"\n---------------------------------------------------\n")
+                        BestAcc.append(Acc)
+                        '''
+                        if Acc < PrevACC:
+                            Weights = copy.deepcopy(PrevWeights)
+                            break;
+                        PrevACC = Acc
+                        PrevWeights = copy.deepcopy(Weights)
+                        '''
+                        
+           fig = plt.figure()
+           ax1 = fig.add_subplot(1,1,1)         
            ax1.clear()        
            ax1.plot(xs,ys)  
            plt.show()     
            Confusion,Mean_square_error = Mse(x_test,y_test)
            print(Confusion)
+           print("Mse : " , Mean_square_error)
            print("Accuracy : ", (Confusion[0][0]+Confusion[1][1]+Confusion[2][2] + Confusion[3][3] + Confusion[4][4])/26.0  )
-                
+           print("The best accuracy is: " ,max(BestAcc))     
                  
 
 def Mse(x,y):
@@ -118,7 +145,7 @@ def Mse(x,y):
    m = len(x)
    Confusion = np.zeros((5,5))
    for i in range(len(x)):
-      a = x[i].reshape((1,25))
+      a = x[i].reshape((1,23))
       """forward"""
       for l in range( 1 , Num_Hidden_Layer+2):
           if(Activation=='sigmoid'):

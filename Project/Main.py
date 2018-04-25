@@ -1,10 +1,31 @@
 from BackPropagation import TrainTheModel
+from rbf import TrainTheModel_rbf
 from PrepareDataset import GetDataset
-
+import numpy as np
+from MLP import MLP
+import matplotlib.pyplot as plt
 def Train():
     x_train,y_train,x_test,y_test = GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
+    from sklearn.preprocessing import StandardScaler
+    sc_x = StandardScaler()
+    x_train = sc_x.fit_transform(x_train)
+    x_test = sc_x.transform(x_test)
+#    model = MLP()
     if AlgoVar.get():
+        '''
+        model.fit(x_train,y_train,epochs_Entry.get(),LearningRate_Entry.get(),Neurons_Entry.get(),Activation_Entry.get(),MSE_Entry.get(),var.get(),Hidden_Entry.get())
+        predictions = model.predict(X=x_test)
+        print(model.eval(predictions,y_test))
+        print(predictions)
+        
+        plt.xlabel("Number of Epochs")
+        plt.ylabel("Cost")
+        plt.plot(model.epochs, model.cost)
+        plt.show()
+        '''
         TrainTheModel(Hidden_Entry.get(),epochs_Entry.get(),LearningRate_Entry.get(),Neurons_Entry.get(),Activation_Entry.get(),MSE_Entry.get(),var.get() , x_train,y_train,x_test,y_test)
+    else:
+        TrainTheModel_rbf(Neurons_Entry.get(),LearningRate_Entry.get(),MSE_Entry.get(),epochs_Entry.get(),5, x_train,y_train,x_test,y_test)
         
 
 

@@ -20,7 +20,7 @@ def GetDataset(TrainingDatasetPath , TestingDatasetPath):
             classes.append(image.split("- ")[1][:-4])
         y_train[idx,classes.index(image.split("- ")[1][:-4])] = 1
         idx = idx + 1
-    clf=PCA(0.9999999999999999,whiten=True)     #converse 90% variance
+    clf=PCA(0.99,whiten=True)     #converse 90% variance
     X_train=clf.fit_transform(tmp_x_train)
        
     tmp_x_test = np.full((26,2500),0)

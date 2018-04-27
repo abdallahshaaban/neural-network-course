@@ -8,7 +8,9 @@ def initialize_Centroid(k,x_data):
     for i in range(k):
         centroids.append(x_data[i])
     return centroids
- 
+def sigmoid(x):
+        return 1 / (1 + np.exp(-x))
+     
  
 def Euclidean_distance(first, second):
     squDist = 0
@@ -18,7 +20,7 @@ def Euclidean_distance(first, second):
     return euclDist
  
  
-KmeanThreshold=.0001
+KmeanThreshold=.00001
 max_iterations=500
  
 def kmean(k,x_data):
@@ -79,7 +81,7 @@ def MSE(y_act , y_pred,classes):
     for j in range(len(y_act)):
         for i in range(classes):
             error+=(y_act[j,i] - y_pred[j,i])**2
-    print(error)
+    #print(error)
     return error/2*len(y_act) 
  
  
@@ -92,7 +94,7 @@ def GradientDescent(Y,Ypred,Alpha,Xs,Cs,classes):
     return NewCs
  
 def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entry,classes,x,y_train,x_test,y_test):
- 
+    global NumOfNeurons,eta,MseThreshold,Num_epochs,Num_of_classes,centroids,sigma,weights
     Num_of_classes=int(classes)
     Num_epochs=int(epochs_Entry)
  
@@ -111,10 +113,48 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
     import random
     for i in range(Num_of_classes):
         weights[:,i:i+1] = np.full((NumOfNeurons,1),random.uniform(0,1))
- 
+    prev=-1e10
     for i in range(Num_epochs):
+        print(i)
         pred=x_train.dot(weights)
+        pred=sigmoid(pred)
+        #pprint.pprint(pred)
+        #pprint.pprint(y_train)
+       
         mse=MSE(pred,y_train,Num_of_classes)
         weights=GradientDescent(y_train,pred,eta,x_train,weights,Num_of_classes)
+        a=Test(x_test,y_test)
+        if a>=prev:
+            prev = a
+        else:
+            break
         if mse <= MseThreshold:
             break;
+import pprint            
+def Test (x_t,y_test):
+    global NumOfNeurons,eta,MseThreshold,Num_epochs,Num_of_classes,centroids,sigma,weights
+    x_test= np.full((len(x_t) , NumOfNeurons) , 0.0)
+    for i in range(len(x_t)):
+        x_test[i] = compute_Gaussian_fun(x_t[i],centroids,sigma)
+    pred=x_test.dot(weights)
+    pred=sigmoid(pred)
+
+    c=0
+    
+    for j in range(len(pred)):
+        s=0
+        m=-1e10
+        for k in range(len(pred[j])):
+            if pred[j,k:k+1]>m:
+                m=pred[j,k:k+1]
+                s=k
+
+            #print(s)    
+        if y_test[j,s]==1:
+                c=c+1
+            
+    print(c/len(x_test))  
+    return c/len(x_test)
+        
+        
+        

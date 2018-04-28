@@ -20,7 +20,7 @@ def Euclidean_distance(first, second):
     return euclDist
  
  
-KmeanThreshold=.00001
+KmeanThreshold=.0001
 max_iterations=500
  
 def kmean(k,x_data):
@@ -72,7 +72,7 @@ def compute_Gaussian_fun(feature,centroids,sigma):
 def update_weights(weights,eta,error,gaussian,classes):
  
     for k in range(classes):
-        weights[k]=weights[k]-(eta*error*gaussian)
+        weights[k]=weights[k]+(eta*error*gaussian)
     return weights
  
  
@@ -82,7 +82,7 @@ def MSE(y_act , y_pred,classes):
         for i in range(classes):
             error+=(y_act[j,i] - y_pred[j,i])**2
     #print(error)
-    return error/2*len(y_act) 
+    return error/(4*len(y_act)) 
  
  
  
@@ -120,6 +120,20 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
         pred=sigmoid(pred)
         #pprint.pprint(pred)
         #pprint.pprint(y_train)
+        c=0
+    
+        for j in range(len(pred)):
+            s=0
+            m=-1e10
+            for k in range(len(pred[j])):
+                if pred[j,k:k+1]>m:
+                    m=pred[j,k:k+1]
+                    s=k
+
+            #print(s)    
+            if y_test[j,s]==1:
+                c=c+1
+        print("train : ",c/len(x_train))    
        
         mse=MSE(pred,y_train,Num_of_classes)
         weights=GradientDescent(y_train,pred,eta,x_train,weights,Num_of_classes)
@@ -128,6 +142,7 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
             prev = a
         else:
             break
+#        print(mse)
         if mse <= MseThreshold:
             break;
 import pprint            
@@ -153,7 +168,8 @@ def Test (x_t,y_test):
         if y_test[j,s]==1:
                 c=c+1
             
-    print(c/len(x_test))  
+    print("test : ",c/len(x_test))    
+  
     return c/len(x_test)
         
         

@@ -4,14 +4,10 @@ from PrepareDataset import Preparation
 import numpy as np
 import matplotlib.pyplot as plt
 def Train():
-<<<<<<< HEAD
     global MLPObj , PrepareObj
     MLPObj = MLP()
     PrepareObj = Preparation()
     x_train,y_train,x_test,y_test = PrepareObj.GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
-=======
-    x_train,y_train,x_test,y_test = GetDataset("C:\\Users\\abdal_000\\Documents\\GitHub\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\abdal_000\\Documents\\GitHub\\neural-network-course\\Project\\Data set\\Testing")
->>>>>>> 5ac0b7479892a188a96624517d723c946bd79a80
     from sklearn.preprocessing import StandardScaler
     sc_x = StandardScaler()
     x_train = sc_x.fit_transform(x_train)

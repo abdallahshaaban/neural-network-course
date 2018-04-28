@@ -90,7 +90,7 @@ def GradientDescent(Y,Ypred,Alpha,Xs,Cs,classes):
     NewCs = np.full((len(Xs[0,:]),classes),0)
     Subt = Y - Ypred
     dcs = Xs.T.dot(Subt)
-    NewCs = Cs + (Alpha* dcs)
+    NewCs = Cs - (Alpha* dcs)
     return NewCs
  
 def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entry,classes,x,y_train,x_test,y_test):

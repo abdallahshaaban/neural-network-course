@@ -194,6 +194,26 @@ class RBF:
       
         return c/len(x_test)
     
+    def Classify (self,x_t,classes):
+        x_test= np.full((len(x_t) , self.NumOfNeurons) , 0.0)
+        for i in range(len(x_t)):
+            x_test[i] = self.compute_Gaussian_fun(x_t[i],self.centroids,self.sigma)
+        pred=x_test.dot(self.weights)
+        
+        p=[]
+        for k in range(len(pred)):
+            s=0
+            m=-1e10
+            for j in range(len(pred[k])):
+                if pred[k][j]>m:
+                    m=pred[k][j]
+                    s=j
+            p.append(classes[s])
+        #pred=sigmoid(pred)
+      
+           
+        print(p)
+        return p
     def LoadWeights(self,Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entry,classes,x,y_train,x_test,y_test):
         self.Num_of_classes=int(classes)
         self.Num_epochs=int(epochs_Entry)

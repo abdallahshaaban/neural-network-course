@@ -34,6 +34,8 @@ def Classify():
     Features = PrepareObj.PrepareSample(str(ImageName_Entry.get()))
     if AlgoVar.get():
         Preds = MLPObj.Classify(Features , PrepareObj.classes)
+    else:
+        Preds = RBFObj.Classify(Features , PrepareObj.classes)
     PrepareObj.Display(Preds , str(ImageName_Entry.get()))
 
 #x_train,y_train,x_test,y_test , data = GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")

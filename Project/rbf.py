@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import math as m
 import pandas as pd
-
+import pprint
 class RBF:
     def __init__(self):
         self.centroids=[]
@@ -85,7 +85,6 @@ class RBF:
         #print(error)
         return error/(2*len(y_act)) 
      
-    import pprint            
     
      
     def GradientDescent(self,Y,Ypred,Alpha,Xs,Cs,classes):
@@ -116,8 +115,11 @@ class RBF:
         for i in range(self.Num_of_classes):
             self.weights[:,i:i+1] = np.full((self.NumOfNeurons,1),random.uniform(0,1))
         prev=-1e10
+        xs=[]
+        ys=[]
         for i in range(self.Num_epochs):
-            print(i)
+            #print(i)
+            xs.append(i)
             pred=x_train.dot(self.weights)
             #pred=sigmoid(pred)
            # pprint.pprint(pred)
@@ -138,6 +140,7 @@ class RBF:
             print("train : ",c/len(x_train))    
            
             mse=self.MSE(pred,y_train,self.Num_of_classes)
+            ys.append(mse)
             #error=y_train-pred
            # weights=update_weights(weights,eta,error,x_train,Num_of_classes)
             self.weights=self.GradientDescent(y_train,pred,self.eta,x_train,self.weights,self.Num_of_classes)
@@ -145,16 +148,21 @@ class RBF:
             a=self.Test(x_test,y_test)
             if a>=prev:
                 prev = a
+                prev_weights=self.weights 
             else:
                 break
     #        print(mse)
             if mse < self.MseThreshold:
                 break;
-        
+        fig = plt.figure()
+        ax1 = fig.add_subplot(1,1,1)         
+        ax1.clear()        
+        ax1.plot(xs,ys)  
+        plt.show()   
         import csv
         with open("RBF_Weights.csv", "w") as f:
             writer = csv.writer(f)
-            writer.writerows(self.weights)
+            writer.writerows(prev_weights)
         return prev
     def Test (self,x_t,y_test):
         x_test= np.full((len(x_t) , self.NumOfNeurons) , 0.0)
@@ -181,7 +189,7 @@ class RBF:
                 if y_test[j,k]==1:
                         e=k
             confusion_matrix[e,s]=confusion_matrix[e,s]+1     
-        #pprint.pprint(confusion_matrix)
+        pprint.pprint(confusion_matrix)
         print("test : ",c/len(x_test))    
       
         return c/len(x_test)

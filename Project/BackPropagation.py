@@ -221,5 +221,38 @@ class MLP:
             self.Bias[l] = np.zeros(( 1 ,self.Num_of_Neurons[l]))
 
         self.Train(self.x_train,self.y_train)
+        np.save('MLP_Weights.npy', self.Weights)
+        np.save('MLP_Bias.npy', self.Bias)
+        
+        
+    def LoadWeights(self,Hidden_Entry,epochs_Entry,LearningRate_Entry,Neurons_Entry,Activation_Entry,MSE_Entry,var,x_tr,y_tr,x_ts,y_ts):
+        self.Num_Hidden_Layer = int(Hidden_Entry) 
+        self.Num_epochs = int(epochs_Entry) 
+        self.eta = float(LearningRate_Entry) 
+        Num_of_Neuron=str(Neurons_Entry)  #you must split to get the actual values
+        self.Activation = str(Activation_Entry) 
+        self.Mse_threshold = float(MSE_Entry) 
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.x_test = x_ts
+        self.y_test = y_ts
+        if var:
+            self.Use_Bias = True
+        else:
+            self.Use_Bias = False
+        
+        self.Num_of_Neurons.append(len(self.x_train[0,:]))
+        for neuron in Num_of_Neuron.split(","):
+          self.Num_of_Neurons.append(int(neuron))   
+        self.Num_of_Neurons.append(len(self.y_train[0,:]))
+        
+        self.Weights = np.load('MLP_Weights.npy').item()
+        self.Bias = np.load('MLP_Bias.npy').item()
+        
+        TestConf,TestMSE = self.Mse(self.x_test,self.y_test)
+        Acc = (TestConf[0][0]+TestConf[1][1]+TestConf[2][2] + TestConf[3][3] + TestConf[4][4])/26.0
+        print(TestConf)
+        print("\n",Acc,"\n---------------------------------------------------\n")
+
         
         

@@ -1,22 +1,29 @@
 from BackPropagation import MLP
-from rbf import TrainTheModel_rbf
+from rbf import RBF
 from PrepareDataset import Preparation
 import numpy as np
 import matplotlib.pyplot as plt
 def Train():
-    global MLPObj , PrepareObj
+    global MLPObj , PrepareObj , RBFObj
     MLPObj = MLP()
     PrepareObj = Preparation()
+    RBFObj = RBF()
     x_train,y_train,x_test,y_test = PrepareObj.GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
     from sklearn.preprocessing import StandardScaler
     sc_x = StandardScaler()
     x_train = sc_x.fit_transform(x_train)
     x_test = sc_x.transform(x_test)
-    if AlgoVar.get():
-        MLPObj.TrainTheModel(Hidden_Entry.get(),epochs_Entry.get(),LearningRate_Entry.get(),Neurons_Entry.get(),Activation_Entry.get(),MSE_Entry.get(),var.get() , x_train,y_train,x_test,y_test)
+    if LoadTrainVar.get():
+        if AlgoVar.get():
+            MLPObj.TrainTheModel(Hidden_Entry.get(),epochs_Entry.get(),LearningRate_Entry.get(),Neurons_Entry.get(),Activation_Entry.get(),MSE_Entry.get(),var.get() , x_train,y_train,x_test,y_test)
+        else:
+            RBFObj.TrainTheModel_rbf(Neurons_Entry.get(),LearningRate_Entry.get(),MSE_Entry.get(),epochs_Entry.get(),5, x_train,y_train,x_test,y_test)
     else:
-        TrainTheModel_rbf(Neurons_Entry.get(),LearningRate_Entry.get(),MSE_Entry.get(),epochs_Entry.get(),5, x_train,y_train,x_test,y_test)
-        
+        if AlgoVar.get():
+            MLPObj.LoadWeights(Hidden_Entry.get(),epochs_Entry.get(),LearningRate_Entry.get(),Neurons_Entry.get(),Activation_Entry.get(),MSE_Entry.get(),var.get() , x_train,y_train,x_test,y_test)
+        else:
+            RBFObj.LoadWeights(Neurons_Entry.get(),LearningRate_Entry.get(),MSE_Entry.get(),epochs_Entry.get(),5, x_train,y_train,x_test,y_test)
+            
 
 def OpenImage():
     from PIL import ImageTk, Image
@@ -30,13 +37,6 @@ def Classify():
     PrepareObj.Display(Preds , str(ImageName_Entry.get()))
 
 #x_train,y_train,x_test,y_test , data = GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
-
-
-
-
-
-
-
 
 
 
@@ -93,33 +93,37 @@ var = IntVar()
 cBox = Checkbutton(root , text = "Use bias" , variable = var)
 AlgoVar = IntVar()
 AlgorithmCBox = Checkbutton(root , text = "Checked(MLP)/Not Checked(RBF)" , variable = AlgoVar)
-Train_Button = Button(root , text = "Train The Model" , command = Train)
+LoadTrainVar = IntVar()
+LoadTrainCBox = Checkbutton(root , text = "Checked(Train)/Not Checked(Load)" , variable = LoadTrainVar)
+Train_Button = Button(root , text = "Load/Train The Model" , command = Train)
 ImageName_Label = Label(root , text = "Image Name")
 ImageName_Entry = Entry(root)
 OpenImage_Button = Button(root , text = "Open The Image" , command = OpenImage)
-Classify_Button = Button(root , text = "Classify" , command = Classify)
 canvas = Canvas(root,width=500,height=500)
+Classify_Button = Button(root , text = "Classify" , command = Classify)
+
 
 #Controls' positions
-LearningRate_Label.grid(row=2 , column=0 )
-LearningRate_Entry.grid(row=2 , column=1 )
-epochs_Label.grid(row=1 , column=0 )
-epochs_Entry.grid(row=1 , column=1 )
-Train_Button.grid(row=8, column=1)
-MSE_Label.grid(row = 5 , column = 0)
-MSE_Entry.grid(row = 5 , column = 1)
 Hidden_Label.grid(row=0, column=0)
 Hidden_Entry.grid(row=0, column=1)
+epochs_Label.grid(row=1 , column=0 )
+epochs_Entry.grid(row=1 , column=1 )
+LearningRate_Label.grid(row=2 , column=0 )
+LearningRate_Entry.grid(row=2 , column=1 )
 Neurons_Label.grid(row=3, column=0)
 Neurons_Entry.grid(row=3, column=1)
 Activation_Label.grid(row=4, column=0)
 Activation_Entry.grid(row=4, column=1)
+MSE_Label.grid(row = 5 , column = 0)
+MSE_Entry.grid(row = 5 , column = 1)
 cBox.grid(row=6, column=1)
 AlgorithmCBox.grid(row=7,column=1)
-canvas.grid(row = 10 , column = 1)
-ImageName_Label.grid(row=9,column=0)
-ImageName_Entry.grid(row=9,column=1)
-OpenImage_Button.grid(row=9 , column=2)
-Classify_Button.grid(row = 11 , column = 1)
+LoadTrainCBox.grid(row=8, column=1)
+Train_Button.grid(row=9, column=1)
+ImageName_Label.grid(row=10,column=0)
+ImageName_Entry.grid(row=10,column=1)
+OpenImage_Button.grid(row=10 , column=2)
+canvas.grid(row = 11 , column = 1)
+Classify_Button.grid(row = 12 , column = 1)
 #For Making the window still displayed
 root.mainloop()

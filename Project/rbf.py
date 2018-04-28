@@ -71,8 +71,8 @@ def compute_Gaussian_fun(feature,centroids,sigma):
  
 def update_weights(weights,eta,error,gaussian,classes):
  
-    for k in range(classes):
-        weights[k]=weights[k]-(eta*error*gaussian)
+    for k in range(len(classes)):
+        weights[k]=weights[k]-(eta*error*gaussian[k])
     return weights
  
  
@@ -84,11 +84,13 @@ def MSE(y_act , y_pred,classes):
     #print(error)
     return error/(2*len(y_act)) 
  
- 
+import pprint            
+
  
 def GradientDescent(Y,Ypred,Alpha,Xs,Cs,classes):
     NewCs = np.full((len(Xs[0,:]),classes),0)
     Subt = Y - Ypred
+    
     dcs = Xs.T.dot(Subt)
     NewCs = Cs + (Alpha* dcs)
     return NewCs
@@ -115,7 +117,7 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
         weights[:,i:i+1] = np.full((NumOfNeurons,1),random.uniform(0,1))
     prev=-1e10
     for i in range(Num_epochs):
-        #print(i)
+        print(i)
         pred=x_train.dot(weights)
         #pred=sigmoid(pred)
        # pprint.pprint(pred)
@@ -133,10 +135,13 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
             #print(s)    
             if y_train[j,s]==1:
                 c=c+1
-        #print("train : ",c/len(x_train))    
+        print("train : ",c/len(x_train))    
        
         mse=MSE(pred,y_train,Num_of_classes)
+        #error=y_train-pred
+       # weights=update_weights(weights,eta,error,x_train,Num_of_classes)
         weights=GradientDescent(y_train,pred,eta,x_train,weights,Num_of_classes)
+        #pprint.pprint(weights)
         a=Test(x_test,y_test)
         if a>=prev:
             prev = a
@@ -146,7 +151,6 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
         if mse < MseThreshold:
             break;
     return prev
-import pprint            
 def Test (x_t,y_test):
     global NumOfNeurons,eta,MseThreshold,Num_epochs,Num_of_classes,centroids,sigma,weights
     x_test= np.full((len(x_t) , NumOfNeurons) , 0.0)
@@ -154,8 +158,8 @@ def Test (x_t,y_test):
         x_test[i] = compute_Gaussian_fun(x_t[i],centroids,sigma)
     pred=x_test.dot(weights)
     #pred=sigmoid(pred)
-
     c=0
+    confusion_matrix=np.full((len(pred[0]),len(pred[0])),0.0)
     confusion_matrix=np.full((len(y_test[0,:]),len(y_test[0,:])),0)
     for j in range(len(pred)):
         s=0
@@ -167,11 +171,16 @@ def Test (x_t,y_test):
 
             #print(s) 
         e=0   
+        if y_test[j,s]==1:
+            c=c+1
         for k in range(len(pred[j])):    
             if y_test[j,k]==1:
                     e=k
         confusion_matrix[e,s]=confusion_matrix[e,s]+1     
-        pprint.pprint(confusion_matrix)
-    #print("test : ",c/len(x_test))    
+    #pprint.pprint(confusion_matrix)
+    print("test : ",c/len(x_test))    
   
     return c/len(x_test)
+        
+        
+        

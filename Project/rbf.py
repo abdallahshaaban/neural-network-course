@@ -27,8 +27,8 @@ def kmean(k,x_data):
     centroids=initialize_Centroid(k,x_data)
     for i in range(max_iterations):
         clusters = {}
-        for i in range(k):
-            clusters[i] = []
+        for j in range(k):
+            clusters[j] = []
         for features in x_data:
             distances = [Euclidean_distance(features ,centroids[centroid])  for centroid in range(len(centroids) ) ]
             classification = distances.index(min(distances))
@@ -46,7 +46,7 @@ def kmean(k,x_data):
             break
     return centroids
  
- 
+
  
 def sigmaSpread(centroids,k):
     distance=[]
@@ -72,7 +72,7 @@ def compute_Gaussian_fun(feature,centroids,sigma):
 def update_weights(weights,eta,error,gaussian,classes):
  
     for k in range(classes):
-        weights[k]=weights[k]+(eta*error*gaussian)
+        weights[k]=weights[k]-(eta*error*gaussian)
     return weights
  
  
@@ -82,7 +82,7 @@ def MSE(y_act , y_pred,classes):
         for i in range(classes):
             error+=(y_act[j,i] - y_pred[j,i])**2
     #print(error)
-    return error/(4*len(y_act)) 
+    return error/(2*len(y_act)) 
  
  
  
@@ -90,7 +90,7 @@ def GradientDescent(Y,Ypred,Alpha,Xs,Cs,classes):
     NewCs = np.full((len(Xs[0,:]),classes),0)
     Subt = Y - Ypred
     dcs = Xs.T.dot(Subt)
-    NewCs = Cs - (Alpha* dcs)
+    NewCs = Cs + (Alpha* dcs)
     return NewCs
  
 def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entry,classes,x,y_train,x_test,y_test):
@@ -115,10 +115,10 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
         weights[:,i:i+1] = np.full((NumOfNeurons,1),random.uniform(0,1))
     prev=-1e10
     for i in range(Num_epochs):
-        print(i)
+        #print(i)
         pred=x_train.dot(weights)
-        pred=sigmoid(pred)
-        #pprint.pprint(pred)
+        #pred=sigmoid(pred)
+       # pprint.pprint(pred)
         #pprint.pprint(y_train)
         c=0
     
@@ -126,14 +126,14 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
             s=0
             m=-1e10
             for k in range(len(pred[j])):
-                if pred[j,k:k+1]>m:
-                    m=pred[j,k:k+1]
+                if pred[j][k]>m:
+                    m=pred[j][k]
                     s=k
 
             #print(s)    
-            if y_test[j,s]==1:
+            if y_train[j,s]==1:
                 c=c+1
-        print("train : ",c/len(x_train))    
+        #print("train : ",c/len(x_train))    
        
         mse=MSE(pred,y_train,Num_of_classes)
         weights=GradientDescent(y_train,pred,eta,x_train,weights,Num_of_classes)
@@ -143,8 +143,9 @@ def TrainTheModel_rbf(Neurons_Entry,LearningRate_Entry,Mse_threshold,epochs_Entr
         else:
             break
 #        print(mse)
-        if mse <= MseThreshold:
+        if mse < MseThreshold:
             break;
+    return prev
 import pprint            
 def Test (x_t,y_test):
     global NumOfNeurons,eta,MseThreshold,Num_epochs,Num_of_classes,centroids,sigma,weights
@@ -152,25 +153,25 @@ def Test (x_t,y_test):
     for i in range(len(x_t)):
         x_test[i] = compute_Gaussian_fun(x_t[i],centroids,sigma)
     pred=x_test.dot(weights)
-    pred=sigmoid(pred)
+    #pred=sigmoid(pred)
 
     c=0
-    
+    confusion_matrix=np.full(len(pred[0]),len(pred[0]),0.0)
     for j in range(len(pred)):
         s=0
         m=-1e10
         for k in range(len(pred[j])):
-            if pred[j,k:k+1]>m:
-                m=pred[j,k:k+1]
+            if pred[j][k]>m:
+                m=pred[j][k]
                 s=k
 
-            #print(s)    
-        if y_test[j,s]==1:
-                c=c+1
-            
-    print("test : ",c/len(x_test))    
+            #print(s) 
+        e=0   
+        for k in range(len(pred[j])):    
+            if y_test[j,k]==1:
+                    e=k
+        confusion_matrix[e,s]=confusion_matrix[e,s]+1     
+        pprint.pprint(confusion_matrix)
+    #print("test : ",c/len(x_test))    
   
     return c/len(x_test)
-        
-        
-        

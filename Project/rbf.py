@@ -156,7 +156,7 @@ def Test (x_t,y_test):
     #pred=sigmoid(pred)
 
     c=0
-    confusion_matrix=np.full(len(pred[0]),len(pred[0]),0.0)
+    confusion_matrix=np.full((len(y_test[0,:]),len(y_test[0,:])),0)
     for j in range(len(pred)):
         s=0
         m=-1e10

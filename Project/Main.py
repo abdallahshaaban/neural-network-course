@@ -8,7 +8,7 @@ def Train():
     MLPObj = MLP()
     PrepareObj = Preparation()
     RBFObj = RBF()
-    x_train,y_train,x_test,y_test = PrepareObj.GetDataset("C:\\Users\\abdal_000\\Documents\\GitHub\\neural-network-course\\Project\Data set\\Training","C:\\Users\\abdal_000\\Documents\\GitHub\\neural-network-course\\Project\Data set\\Testing")
+    x_train,y_train,x_test,y_test = PrepareObj.GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
     from sklearn.preprocessing import StandardScaler
     sc_x = StandardScaler()
     x_train = sc_x.fit_transform(x_train)

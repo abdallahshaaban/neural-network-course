@@ -109,11 +109,13 @@ class RBF:
         x_train= np.full((len(x) , self.NumOfNeurons) , 0.0)
         for i in range(len(x)):
             x_train[i] = self.compute_Gaussian_fun(x[i],self.centroids,self.sigma)
-     
-        self.weights = np.full((self.NumOfNeurons , self.Num_of_classes) , 0.0)
+            
         import random
+        self.weights = np.full((self.NumOfNeurons , self.Num_of_classes) , random.uniform(0,1))
+        '''
         for i in range(self.Num_of_classes):
             self.weights[:,i:i+1] = np.full((self.NumOfNeurons,1),random.uniform(0,1))
+        '''
         prev=-1e10
         xs=[]
         ys=[]

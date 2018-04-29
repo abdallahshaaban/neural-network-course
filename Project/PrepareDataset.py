@@ -36,7 +36,7 @@ class Preparation:
             y_test[idx,self.classes.index(image.split("- ")[1][:-4])] = 1
             idx = idx + 1        
         X_test=self.clf.transform(tmp_x_test)
-        return X_train , y_train , X_test , y_test
+        return X_train , y_train , X_test , y_test , tmp_x_train , tmp_x_test
     def PrepareSample(self,SamplePath):
         self.RegionIndex = []
         RealImage = Image.open(SamplePath + ".jpg").convert('L')
@@ -64,7 +64,7 @@ class Preparation:
                 TmpFeatures[i,:] = np.array(GrayImage).reshape((1,2500))
                 i = i + 1
             idx = idx + 1
-        return self.clf.transform(TmpFeatures)
+        return self.clf.transform(TmpFeatures) , TmpFeatures
     def Display(self , Pred,SamplePath):
         print("\n\t\t-------------------------- Result of Image: " + SamplePath + " --------------------------\n")
         RealImage = Image.open(SamplePath + ".jpg")

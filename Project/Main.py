@@ -3,12 +3,18 @@ from rbf import RBF
 from PrepareDataset import Preparation
 import numpy as np
 import matplotlib.pyplot as plt
+from PCA import pca
 def Train():
-    global MLPObj , PrepareObj , RBFObj
+    global MLPObj , PrepareObj , RBFObj , PCAObj , sc_x
     MLPObj = MLP()
     PrepareObj = Preparation()
     RBFObj = RBF()
-    x_train,y_train,x_test,y_test = PrepareObj.GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
+    PCAObj = pca()
+    x_train,y_train,x_test,y_test,Original_x_train , Original_x_test = PrepareObj.GetDataset("C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Training","C:\\Users\\Lenovo-PC\\Desktop\\neural-network-course\\Project\\Data set\\Testing")
+    if NNPCAVar.get():
+        PCAObj.LoadWeights()
+        x_train = PCAObj.transform(Original_x_train)
+        x_test = PCAObj.transform(Original_x_test)
     from sklearn.preprocessing import StandardScaler
     sc_x = StandardScaler()
     x_train = sc_x.fit_transform(x_train)
@@ -30,8 +36,11 @@ def OpenImage():
     canvas.image = ImageTk.PhotoImage(Image.open(str(ImageName_Entry.get()) + ".jpg"))
     canvas.create_image(0,0,anchor = 'nw' , image = canvas.image)
 def Classify():
-    global MLPObj , PrepareObj
-    Features = PrepareObj.PrepareSample(str(ImageName_Entry.get()))
+    global MLPObj , PrepareObj , RBFObj , PCAObj , sc_x
+    Features , OriginalFeatures = PrepareObj.PrepareSample(str(ImageName_Entry.get()))
+    if NNPCAVar.get():
+        Features = PCAObj.transform(OriginalFeatures)
+    Features = sc_x.transform(Features)
     if AlgoVar.get():
         Preds = MLPObj.Classify(Features , PrepareObj.classes)
     else:
@@ -97,6 +106,8 @@ AlgoVar = IntVar()
 AlgorithmCBox = Checkbutton(root , text = "Checked(MLP)/Not Checked(RBF)" , variable = AlgoVar)
 LoadTrainVar = IntVar()
 LoadTrainCBox = Checkbutton(root , text = "Checked(Train)/Not Checked(Load)" , variable = LoadTrainVar)
+NNPCAVar = IntVar()
+NNPCACBox = Checkbutton(root , text = "Checked(NN PCA)/Not Checked(Statistical PCA)" , variable = NNPCAVar)
 Train_Button = Button(root , text = "Load/Train The Model" , command = Train)
 ImageName_Label = Label(root , text = "Image Name")
 ImageName_Entry = Entry(root)
@@ -120,12 +131,13 @@ MSE_Label.grid(row = 5 , column = 0)
 MSE_Entry.grid(row = 5 , column = 1)
 cBox.grid(row=6, column=1)
 AlgorithmCBox.grid(row=7,column=1)
-LoadTrainCBox.grid(row=8, column=1)
-Train_Button.grid(row=9, column=1)
-ImageName_Label.grid(row=10,column=0)
-ImageName_Entry.grid(row=10,column=1)
-OpenImage_Button.grid(row=10 , column=2)
-canvas.grid(row = 11 , column = 1)
-Classify_Button.grid(row = 12 , column = 1)
+NNPCACBox.grid(row=8 , column=1)
+LoadTrainCBox.grid(row=9, column=1)
+Train_Button.grid(row=10, column=1)
+ImageName_Label.grid(row=11,column=0)
+ImageName_Entry.grid(row=11,column=1)
+OpenImage_Button.grid(row=11 , column=2)
+canvas.grid(row = 12 , column = 1)
+Classify_Button.grid(row = 13 , column = 1)
 #For Making the window still displayed
 root.mainloop()
